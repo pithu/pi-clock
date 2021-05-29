@@ -1,51 +1,64 @@
 import RPi.GPIO as GPIO
-import time, os, threading
- 
+import time, os
+from threading import Event, Thread
+from datetime import datetime
+
+############################
 GPIO_PIR = 23
 TIMEOUT = 180 # sec
- 
- 
+
 ############################
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(GPIO_PIR, GPIO.IN)
- 
+
+############################
+
+class Timer(Thread):
+    def __init__(self, event, callback):
+        Thread.__init__(self)
+        self.event = event
+        self.callback = callback
+
+    def run(self):
+        while not self.event.wait(TIMEOUT):
+            self.callback()
+
+def log(msg):
+    print(f'{datetime.now().isoformat()}: {msg}')
+
 def displayOn():
-    print("Switch display on")
+    log("Switch display on")
     os.system("echo 0 > /sys/class/backlight/rpi_backlight/bl_power") # on
 
 def displayOff():
-    print("Switch display off")
+    log("Switch display off")
     os.system("echo 1 > /sys/class/backlight/rpi_backlight/bl_power") # off
 
-def startSwitchOffTimer():
-    print("Will do a check_move_state in", TIMEOUT, " secs")
-    threading.Timer(TIMEOUT, check_move_state).start() 
-
-def check_move_state():
+def check_move_state(*argv):
     movement = GPIO.input(GPIO_PIR)
-    print("Check move state", movement == 1, time.time())
+    log(f'Move detect state: {movement == 1}')
     if movement == 0:
         displayOff()
     else:
-        # Wait again
         displayOn()
-        startSwitchOffTimer()
- 
-def move_detected(channel):
-    print("Move detected")
-    displayOn()
-    startSwitchOffTimer()
 
-print("Display standby by motion detection")
+def move_detected(channel):
+    log(f'Move detected channel {channel}')
+    displayOn()
+
+log("Display standby motion detection started")
+
+stopFlag = Event()
+Timer(stopFlag, check_move_state).start()
 
 try:
     GPIO.add_event_detect(GPIO_PIR , GPIO.RISING, callback=move_detected)
-    startSwitchOffTimer()
     while True:
         time.sleep(1)
-
 except KeyboardInterrupt:
     print("Goodby ...")
 
+stopFlag.set()
 GPIO.cleanup()
