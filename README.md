@@ -20,5 +20,5 @@ $ sudo crontab -e
 
 ```shell
 @reboot /usr/bin/sudo /bin/chmod 666 /sys/class/backlight/rpi_backlight/bl_power
-@reboot /usr/bin/sudo /usr/bin/python /home/pithu/Projects/pi-clock/display-standpy.py
+@reboot /usr/bin/sudo /home/pi/pi-clock/display-standpy.sh 
 ```
