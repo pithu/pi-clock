@@ -1,9 +1,11 @@
 import RPi.GPIO as GPIO
 import time, os
+from threading import Event, Thread
 from datetime import datetime
 
 ############################
 GPIO_PIR = 23
+TIMEOUT = 180 # sec
 
 ############################
 
@@ -13,8 +15,18 @@ GPIO.setup(GPIO_PIR, GPIO.IN)
 
 ############################
 
+class Timer(Thread):
+    def __init__(self, event, callback):
+        Thread.__init__(self)
+        self.event = event
+        self.callback = callback
+
+    def run(self):
+        while not self.event.wait(TIMEOUT):
+            self.callback()
+
 def log(msg):
-    print(f'{datetime.now().isoformat()}: {msg}')
+    print(f'{datetime.now().isoformat()}: {msg}', flush = True)
 
 def displayOn():
     log("Switch display on")
@@ -26,13 +38,16 @@ def displayOff():
 
 def check_move_state(*argv):
     movement = GPIO.input(GPIO_PIR)
-    log(f'Move detect state: {movement == 1}')
+    log(f'{"Event:" if len(argv) == 1 else "Timer:"} Move detect state: {movement == 1}')
     if movement == 0:
         displayOff()
     else:
         displayOn()
 
 log("Display standby motion detection started")
+
+stopFlag = Event()
+Timer(stopFlag, check_move_state).start()
 
 try:
     GPIO.add_event_detect(GPIO_PIR , GPIO.BOTH, callback=check_move_state)
@@ -41,4 +56,5 @@ try:
 except KeyboardInterrupt:
     print("Goodby ...")
 
+stopFlag.set()
 GPIO.cleanup()
