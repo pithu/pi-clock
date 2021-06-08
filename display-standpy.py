@@ -11,7 +11,7 @@ TIMEOUT = 180 # sec
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(GPIO_PIR, GPIO.IN)
+GPIO.setup(GPIO_PIR, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 ############################
 
@@ -47,7 +47,7 @@ def check_move_state(*argv):
 log("Display standby motion detection started")
 
 stopFlag = Event()
-Timer(stopFlag, check_move_state).start()
+# Timer(stopFlag, check_move_state).start()
 
 try:
     GPIO.add_event_detect(GPIO_PIR , GPIO.BOTH, callback=check_move_state)
