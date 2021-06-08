@@ -1,6 +1,6 @@
 import React from "react";
 import './App.css';
-import TextClock from "./TextClock";
+import ReactClock from "./react-clock/ReactClock";
 
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
         <header className="App-header">
-            <TextClock />
+            <ReactClock />
         </header>
     </div>
   );
