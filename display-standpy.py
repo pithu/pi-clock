@@ -29,11 +29,11 @@ def log(msg):
     print(f'{datetime.now().isoformat()}: {msg}', flush = True)
 
 def displayOn():
-    log("Switch display on")
+    # log("Switch display on")
     os.system("echo 0 > /sys/class/backlight/rpi_backlight/bl_power") # on
 
 def displayOff():
-    log("Switch display off")
+    # log("Switch display off")
     os.system("echo 1 > /sys/class/backlight/rpi_backlight/bl_power") # off
 
 def check_move_state(*argv):
