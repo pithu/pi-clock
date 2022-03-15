@@ -11,14 +11,18 @@ function App() {
     <div className="App">
         <header className="App-header">
             <Grid container align="center" alignItems="center" justify="center">
-                <Grid item xs={6}>
+                <Grid item xs={3}>
                     <Grid container>
-                        <Grid item xs={12}><MoonPhase moonPhase={3.14/3} /></Grid>
-                        <Grid item xs={12}><MoonPhase moonPhase={3 * 3.14/4} /></Grid>
+                        <Grid item xs={12} >
+                            <div className="scaled"><MoonPhase moonPhase={3.14/3} /></div>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={6}>
                     <ReactClock />
+                </Grid>
+                <Grid item xs={3}>
+                    <div />
                 </Grid>
             </Grid>
         </header>

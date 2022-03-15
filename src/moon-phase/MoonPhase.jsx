@@ -130,7 +130,7 @@ export default class MoonPhase extends React.Component {
 
     render() {
         return (
-            <div className="mt-1" ref={(thisDiv) => {this.el = thisDiv}} />
+            <div className="moonPhase" ref={(thisDiv) => {this.el = thisDiv}} />
         );
     }
 }
