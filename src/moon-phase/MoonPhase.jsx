@@ -2,30 +2,35 @@ import React from 'react';
 import * as PIXI from 'pixi.js';
 import { Moon } from "lunarphase-js";
 
+const UPDATE_INTERVAL = 60 * 1000;
+
+const calculateMoonPhase = () => Math.PI + 2 * (Moon.lunarAgePercent()) * Math.PI;
+const moonPhaseInfo = () => ({
+    lunarAgePercent: Moon.lunarAgePercent(),
+    isWaxing: Moon.isWaxing(),
+    isWaning: Moon.isWaning(),
+    lunarAge: Moon.lunarAge(),
+    lunationNumber: Moon.lunationNumber(),
+    lunarDistance: Moon.lunarDistance(),
+});
+
 export default class MoonPhase extends React.Component {
     constructor(props) {
         super(props);
-        console.log({
-            lunarAgePercent: Moon.lunarAgePercent(),
-            isWaxing: Moon.isWaxing(),
-            isWaning: Moon.isWaning(),
-            lunarAge: Moon.lunarAge(),
-            lunationNumber: Moon.lunationNumber(),
-            lunarDistance: Moon.lunarDistance(),
-        })
+
+        this.updateMoonPhase = this.updateMoonPhase.bind(this);
+        console.log(moonPhaseInfo())
+
         this.moon = null;
         this.radius = 100.5;
 
         // width: 228, height: 215
         this.center = new PIXI.Point(214 / 2, 214 / 2);
-        this.state = {
-            moonPhase: Math.PI + 2 * (Moon.lunarAgePercent()) * Math.PI,
-        }
+        this.state = { moonPhase: calculateMoonPhase() }
     }
 
     componentDidMount() {
-        const me = this;
-
+        const that = this;
         this.app = new PIXI.Application({
             width: this.center.x * 2,
             height: this.center.y * 2,
@@ -36,16 +41,28 @@ export default class MoonPhase extends React.Component {
         this.app.loader.add('moon', 'images/moon.png');
 
         this.app.loader.load((loader, resources) => {
-            me.moon = resources.moon;
-            me.draw();
+            that.moon = resources.moon;
+            that.draw();
         });
+        this.updateInterval = setInterval(this.updateMoonPhase, UPDATE_INTERVAL);
     }
+
+    componentWillUnmount() {
+        clearInterval(this.updateInterval);
+    }
+
+    updateMoonPhase() {
+        // console.log(moonPhaseInfo())
+        this.setState({ moonPhase: calculateMoonPhase() });
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.moonPhase !== this.state.moonPhase) {
+        if (this.leftShade && prevState.moonPhase !== this.state.moonPhase) {
             this.drawPhase(this.leftShade, this.rightShade,
                            this.convertPhase(this.state.moonPhase));
         }
     }
+
     draw() {
         this.drawMoon(this.app);
         this.drawShades(this.app);
