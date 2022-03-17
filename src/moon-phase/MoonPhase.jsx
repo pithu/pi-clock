@@ -13,6 +13,18 @@ const moonPhaseInfo = () => ({
     lunationNumber: Moon.lunationNumber(),
     lunarDistance: Moon.lunarDistance(),
 });
+const formatNumber = (number) =>
+    number.toLocaleString('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+const formatLunarAge = (lunarAgePercent) => {
+    const percentageOfFull = 2 * lunarAgePercent * 100;
+    if (percentageOfFull > 100) {
+        return formatNumber(percentageOfFull -200)
+    }
+    return formatNumber(percentageOfFull);
+}
 
 export default class MoonPhase extends React.Component {
     constructor(props) {
@@ -26,7 +38,10 @@ export default class MoonPhase extends React.Component {
 
         // width: 228, height: 215
         this.center = new PIXI.Point(214 / 2, 214 / 2);
-        this.state = { moonPhase: calculateMoonPhase() }
+        this.state = {
+            ...moonPhaseInfo(),
+            moonPhase: calculateMoonPhase(),
+        }
     }
 
     componentDidMount() {
@@ -53,7 +68,10 @@ export default class MoonPhase extends React.Component {
 
     updateMoonPhase() {
         // console.log(moonPhaseInfo())
-        this.setState({ moonPhase: calculateMoonPhase() });
+        this.setState({
+            ...moonPhaseInfo(),
+            moonPhase: calculateMoonPhase(),
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -158,7 +176,13 @@ export default class MoonPhase extends React.Component {
 
     render() {
         return (
-            <div className="moonPhase" ref={(thisDiv) => {this.el = thisDiv}} />
+            <div>
+                <div className="moonPhase" ref={(thisDiv) => {this.el = thisDiv}} />
+                <div>
+                    <div>{formatLunarAge(this.state.lunarAgePercent)} %</div>
+                    <div>{formatNumber(this.state.lunarDistance)} er</div>
+                </div>
+            </div>
         );
     }
 }
