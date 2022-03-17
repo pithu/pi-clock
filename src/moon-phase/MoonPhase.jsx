@@ -1,15 +1,26 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import * as PIXI from 'pixi.js';
+import { Moon } from "lunarphase-js";
 
 export default class MoonPhase extends React.Component {
     constructor(props) {
         super(props);
+        console.log({
+            lunarAgePercent: Moon.lunarAgePercent(),
+            isWaxing: Moon.isWaxing(),
+            isWaning: Moon.isWaning(),
+            lunarAge: Moon.lunarAge(),
+            lunationNumber: Moon.lunationNumber(),
+            lunarDistance: Moon.lunarDistance(),
+        })
         this.moon = null;
         this.radius = 100.5;
 
         // width: 228, height: 215
         this.center = new PIXI.Point(214 / 2, 214 / 2);
+        this.state = {
+            moonPhase: Math.PI + 2 * (Moon.lunarAgePercent()) * Math.PI,
+        }
     }
 
     componentDidMount() {
@@ -29,17 +40,17 @@ export default class MoonPhase extends React.Component {
             me.draw();
         });
     }
-    componentDidUpdate(prevProps) {
-        if (prevProps.moonPhase !== this.props.moonPhase) {
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.moonPhase !== this.state.moonPhase) {
             this.drawPhase(this.leftShade, this.rightShade,
-                           this.convertPhase(this.props.moonPhase));
+                           this.convertPhase(this.state.moonPhase));
         }
     }
     draw() {
         this.drawMoon(this.app);
         this.drawShades(this.app);
         this.drawPhase(this.leftShade, this.rightShade,
-                       this.convertPhase(this.props.moonPhase));
+                       this.convertPhase(this.state.moonPhase));
     }
     drawMoon(app) {
         const moon = new PIXI.Sprite(this.moon.texture);
@@ -134,7 +145,3 @@ export default class MoonPhase extends React.Component {
         );
     }
 }
-
-MoonPhase.propTypes = {
-    moonPhase: PropTypes.number.isRequired,
-};

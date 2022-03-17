@@ -14,7 +14,7 @@ function App() {
                 <Grid item xs={3}>
                     <Grid container>
                         <Grid item xs={12} >
-                            <div className="scaled"><MoonPhase moonPhase={3.14/3} /></div>
+                            <div className="scaled"><MoonPhase /></div>
                         </Grid>
                     </Grid>
                 </Grid>
