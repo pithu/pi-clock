@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import './react-clock.css';
 import Clock from 'react-clock';
 
-function ReactClock() {
+function ReactClock({ size }) {
     const [value, setValue] = useState(new Date());
 
     useEffect(() => {
@@ -31,11 +32,19 @@ function ReactClock() {
                 secondHandLength={75}
                 secondHandOppositeLength={25}
                 secondHandWidth={3}
-                size={350}
+                size={size}
                 value={value}
             />
         </>
     )
 }
+
+ReactClock.propTypes = {
+    size: PropTypes.number,
+};
+
+ReactClock.defaultProps = {
+    size: 200,
+};
 
 export default ReactClock

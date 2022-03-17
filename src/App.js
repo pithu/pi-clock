@@ -11,18 +11,11 @@ function App() {
     <div className="App">
         <header className="App-header">
             <Grid container align="center" alignItems="center" justify="center">
-                <Grid item xs={3}>
-                    <Grid container>
-                        <Grid item xs={12} >
-                            <div className="scaled"><MoonPhase /></div>
-                        </Grid>
-                    </Grid>
+                <Grid item xs={6}>
+                    <MoonPhase />
                 </Grid>
                 <Grid item xs={6}>
-                    <ReactClock />
-                </Grid>
-                <Grid item xs={3}>
-                    <div />
+                    <ReactClock size={250} />
                 </Grid>
             </Grid>
         </header>
