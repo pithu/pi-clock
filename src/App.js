@@ -1,8 +1,8 @@
-import React from "react";
-import { Grid } from '@material-ui/core';
+import React from 'react';
+import Grid from '@mui/material/Grid'
 import './App.css';
-import ReactClock from "./react-clock/ReactClock";
-import MoonPhase from "./moon-phase/MoonPhase";
+import ReactClock from './react-clock/ReactClock';
+import MoonPhase from './moon-phase/MoonPhase';
 
 
 function App() {
@@ -10,12 +10,12 @@ function App() {
   return (
     <div className="App">
         <header className="App-header">
-            <Grid container align="center" alignItems="center" justify="center">
+            <Grid container align="center" alignItems="flex-start" justify="center">
                 <Grid item xs={6}>
                     <MoonPhase />
                 </Grid>
                 <Grid item xs={6}>
-                    <ReactClock size={250} />
+                    <ReactClock size={228} />
                 </Grid>
             </Grid>
         </header>

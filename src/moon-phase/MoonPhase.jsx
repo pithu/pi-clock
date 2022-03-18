@@ -1,6 +1,11 @@
 import React from 'react';
+import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import CircleIcon from '@mui/icons-material/Circle';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import * as PIXI from 'pixi.js';
 import { Moon } from "lunarphase-js";
+import './moon-phase.css';
 
 const UPDATE_INTERVAL = 60 * 1000;
 
@@ -13,19 +18,56 @@ const moonPhaseInfo = () => ({
     lunationNumber: Moon.lunationNumber(),
     lunarDistance: Moon.lunarDistance(),
 });
+
 const formatNumber = (number) =>
     number.toLocaleString('de-DE', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
-const formatLunarAge = (lunarAgePercent) => {
+
+const calculateLunarAge = (lunarAgePercent) => {
     const percentageOfFull = 2 * lunarAgePercent * 100;
-    if (percentageOfFull > 100) {
-        return formatNumber(percentageOfFull -200)
+    const percentageOfFullFormatted = formatNumber(percentageOfFull);
+
+    if (percentageOfFullFormatted === formatNumber(100)) {
+        return {
+            percentageOfFull: percentageOfFullFormatted,
+            dest: 'full',
+        }
+    } else if (percentageOfFullFormatted === formatNumber(0)) {
+        return {
+            percentageOfFull: percentageOfFullFormatted,
+            dest: 'new',
+        }
+    } else if (percentageOfFull > 100) {
+        return {
+            percentageOfFull: formatNumber(200 - percentageOfFull),
+            dest: 'down',
+        }
     }
-    return formatNumber(percentageOfFull);
+    return {
+        percentageOfFull: percentageOfFullFormatted,
+        dest: 'up',
+    }
 }
 
+const calculateLunarDistance = (lunarDistance) => {
+    const distanceInOneHour = Moon.lunarDistance(new Date(new Date().getTime() + (60*60*1000)));
+    return {
+        earthRadii: formatNumber(lunarDistance),
+        dest: lunarDistance > distanceInOneHour ? 'up' : 'down',
+    }
+}
+
+const getLunarDestIcon = (dest) => {
+    switch(dest) {
+        case 'down': return ArrowCircleDownIcon;
+        case 'up': return ArrowCircleUpIcon;
+        case 'full': return CircleIcon;
+        case 'new': return CheckBoxOutlineBlankIcon;
+        default: throw new Error(`unknown dest ${dest}`)
+    }
+}
 export default class MoonPhase extends React.Component {
     constructor(props) {
         super(props);
@@ -175,12 +217,16 @@ export default class MoonPhase extends React.Component {
     }
 
     render() {
+        const lunarAge = calculateLunarAge(this.state.lunarAgePercent)
+        const LunarDestIcon = getLunarDestIcon(lunarAge.dest);
+        const lunarDistance = calculateLunarDistance(this.state.lunarDistance)
+        const LunarDistIcon = getLunarDestIcon(lunarDistance.dest);
         return (
-            <div>
+            <div className="moon-scaled">
                 <div className="moonPhase" ref={(thisDiv) => {this.el = thisDiv}} />
                 <div>
-                    <div>{formatLunarAge(this.state.lunarAgePercent)} %</div>
-                    <div>{formatNumber(this.state.lunarDistance)} er</div>
+                    <div><LunarDestIcon /> {lunarAge.percentageOfFull} %</div>
+                    <div><LunarDistIcon /> {lunarDistance.earthRadii} er</div>
                 </div>
             </div>
         );
